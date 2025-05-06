@@ -3,16 +3,15 @@ import {
   applyMiddleware,
   combineReducers,
 } from "redux";
-
 import { thunk } from "redux-thunk";
-import logger from "redux-logger";
+import tweetReducer from "./reducers/tweetReducer";
+import userReducer from "./reducers/userReducer";
 
-const rootReducerr = (state = {}, action) => {
-  switch (action.type) {
-    default:
-      return state;
-  }
-};
+const rootReducer = combineReducers({
+  tweets: tweetReducer,
+  user: userReducer,
+});
 
-const store = createStore(rootReducer, applyMiddleware(thunk, logger));
+const store = createStore(rootReducer, applyMiddleware(thunk)); // Store'u oluştur
+
 export default store;
