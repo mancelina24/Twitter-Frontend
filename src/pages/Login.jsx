@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { useHistory } from "react-router-dom";
-import { login } from "../services/userService";
+import { login } from "../store/actions/userActions";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -13,14 +13,20 @@ const Login = () => {
   );
   const history = useHistory();
 
-  const handleLogin = async (e) => {
+  useEffect(() => {
+    if (isAuthenticated) {
+      history.push("/"); // Giriş başarılıysa anasayfaya yönlendir
+    }
+  }, [isAuthenticated, history]);
+
+  const handleLogin = (e) => {
     e.preventDefault();
-    dispatch(login(email, password));
+    dispatch(login(email, password)); // thunk action
   };
 
-  if (isAuthenticated) {
-    history.push("/"); // Giriş başarılıysa anasayfaya yönlendir
-  }
+  // if (isAuthenticated) {
+  //   history.push("/"); // Giriş başarılıysa anasayfaya yönlendir
+  // }
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -43,6 +49,7 @@ const Login = () => {
               placeholder="E-posta"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="username"
             />
           </div>
           <div className="mb-6">
@@ -55,10 +62,11 @@ const Login = () => {
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
               id="password"
-              type="password"
               placeholder="Şifre"
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
             />
             {error && <p className="text-red-500 text-xs italic">{error}</p>}
           </div>

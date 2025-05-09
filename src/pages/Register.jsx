@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { useHistory } from "react-router-dom";
-import { register } from "../services/userService";
+import { register } from "../store/actions/userActions";
 
 const Register = () => {
   const [username, setUsername] = useState("");

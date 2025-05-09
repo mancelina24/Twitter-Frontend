@@ -9,7 +9,11 @@ const userReducer = (state = initialState, action) => {
   switch (action.type) {
     case "LOGIN_REQUEST":
     case "REGISTER_REQUEST":
-      return { ...state, loading: true, error: null };
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
     case "LOGIN_SUCCESS":
       return {
         ...state,
