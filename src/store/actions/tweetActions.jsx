@@ -4,7 +4,7 @@ export const fetchTweets = () => async (dispatch) => {
   dispatch({ type: "FETCH_TWEETS_REQUEST" });
   try {
     const tweets = await tweetService.getAllTweets();
-    dispatch({ type: "FETCH_TWEETS_SUCCESS", payload: tweets });
+    dispatch({ type: "FETCH_TWEETS_SUCCESS", payload: tweets.data }); // response.data bir array olmalı!
   } catch (error) {
     dispatch({ type: "FETCH_TWEETS_FAILURE", payload: error.message });
   }

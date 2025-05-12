@@ -3,7 +3,7 @@ import axios from "axios";
 const API_BASE_URL = "http://localhost:3000/workintech/twitter/tweet"; // Backend API URL
 
 export const getAllTweets = async () => {
-  const response = await axios.get(`${API_BASE_URL}`, {
+  const response = await axios.get(API_BASE_URL, {
     withCredentials: true,
   });
   return response.data;

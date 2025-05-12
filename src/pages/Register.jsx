@@ -74,6 +74,7 @@ const Register = () => {
               placeholder="Şifre"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
             />
             {error && <p className="text-red-500 text-xs italic">{error}</p>}
           </div>
