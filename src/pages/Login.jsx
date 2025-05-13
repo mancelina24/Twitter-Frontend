@@ -56,6 +56,13 @@ const Login = () => {
         >
           Giriş Yap
         </button>
+        <button
+          type="button"
+          onClick={() => navigate("/register")}
+          className="mt-4 w-full bg-gray-200 text-gray-800 p-2 rounded hover:bg-gray-300"
+        >
+          Üye değil misiniz? Kayıt Ol
+        </button>
       </form>
     </div>
   );

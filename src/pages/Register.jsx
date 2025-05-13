@@ -103,6 +103,13 @@ const Register = () => {
         >
           Kayıt Ol
         </button>
+        <button
+          type="button"
+          onClick={() => navigate("/login")}
+          className="mt-4 w-full bg-gray-200 text-gray-800 p-2 rounded hover:bg-gray-300"
+        >
+          Zaten üye misiniz? Giriş Yap
+        </button>
       </form>
     </div>
   );
