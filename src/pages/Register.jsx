@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Register = () => {
@@ -7,7 +7,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const history = useHistory();
+  const navigate = useNavigate();
 
   // Form submit işlemi
   const handleSubmit = async (e) => {
@@ -30,7 +30,7 @@ const Register = () => {
 
       if (response.status === 200) {
         // Kayıt başarılı olduktan sonra login sayfasına yönlendir
-        history.push("/login");
+        navigate("/login");
       }
     } catch (err) {
       setError("Bir hata oluştu! Lütfen tekrar deneyin.");

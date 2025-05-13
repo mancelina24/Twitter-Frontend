@@ -11,12 +11,23 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
+  // Safe JSON parse function
+  const safeJSONParse = (str) => {
+    try {
+      return JSON.parse(str);
+    } catch (e) {
+      return null;
+    }
+  };
+
   // useEffect ile sayfa her yüklendiğinde token ve user kontrolü yapıyoruz
   useEffect(() => {
-    const storedToken = localStorage.getItem("access_token");
     const storedUser = localStorage.getItem("user");
-    if (storedToken && storedUser) {
-      setUser(JSON.parse(storedUser)); // User bilgilerini state'e yüklüyoruz
+    const parsedUser = safeJSONParse(storedUser);
+    if (parsedUser) {
+      setUser(parsedUser); // User bilgilerini state'e yüklüyoruz
+    } else {
+      localStorage.removeItem("user"); // Geçersiz veriyi temizle
     }
   }, []);
 
@@ -26,29 +37,27 @@ export const AuthProvider = ({ children }) => {
         "http://localhost:3000/workintech/twitter/auth/login",
         { email, password }
       );
-      const token = response.data.token; // Token'ı alıyoruz
       const userData = response.data.user; // User bilgilerini alıyoruz
 
-      // Token'ı ve user bilgisini localStorage'a kaydediyoruz
-      localStorage.setItem("access_token", token);
+      // User bilgisini localStorage'a kaydediyoruz
       localStorage.setItem("user", JSON.stringify(userData));
 
       // User bilgilerini state'e kaydediyoruz
       setUser(userData);
     } catch (error) {
       console.error("Login hatası:", error);
+      throw error; // Hata durumunda mesaj verebiliriz
     }
   };
 
   const logout = () => {
-    // localStorage'dan token ve user bilgilerini kaldırıyoruz
-    localStorage.removeItem("access_token");
+    // localStorage'dan user bilgisini kaldırıyoruz
     localStorage.removeItem("user");
     setUser(null); // Kullanıcı bilgisini state'ten temizliyoruz
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

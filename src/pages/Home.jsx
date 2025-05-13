@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 
@@ -7,30 +7,14 @@ const Home = () => {
   const [tweets, setTweets] = useState([]);
   const [tweetText, setTweetText] = useState("");
   const { user, logout } = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Yönlendirme için state
-  const isFirstRender = useRef(true); // İlk render'ı takip etmek için
 
   // Sayfa ilk yüklendiğinde tüm tweet'leri al
   useEffect(() => {
     const fetchTweets = async () => {
-      const token = localStorage.getItem("access_token");
-
-      if (!token) {
-        // Token yoksa ve ilk render ise yönlendir
-        if (isFirstRender.current) {
-          history.push("/login");
-          isFirstRender.current = false; // Yönlendirme yapıldığını işaretle
-        }
-        return; // Veri çekme işlemine devam etme
-      }
-
       try {
-        const response = await axios.get("/tweet", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get("/tweet");
         setTweets(response.data);
       } catch (error) {
         console.error("Tweet'ler alınırken bir hata oluştu", error);
@@ -38,7 +22,7 @@ const Home = () => {
     };
 
     fetchTweets();
-  }, [history]); // Bağımlılık listesinden isLoggedIn çıkarıldı
+  }, []); // Bağımlılık listesinden isLoggedIn çıkarıldı
 
   // Tweet ekleme işlemi
   const handleAddTweet = async (e) => {
@@ -49,8 +33,11 @@ const Home = () => {
     }
 
     try {
-      const newTweet = { text: tweetText, userId: user.id };
-      const response = await axios.post("/tweet/create", newTweet);
+      const newTweet = { content: tweetText, userId: user.id };
+      const response = await axios.post(
+        "http://localhost:3000/workintech/twitter/tweet/create",
+        newTweet
+      );
       setTweets([response.data, ...tweets]);
       setTweetText("");
     } catch (error) {
@@ -61,7 +48,9 @@ const Home = () => {
   // Tweet silme işlemi
   const handleDeleteTweet = async (tweetId) => {
     try {
-      await axios.delete(`/tweet/delete/${tweetId}`);
+      await axios.delete(
+        `http://localhost:3000/workintech/twitter/tweet/delete/${tweetId}`
+      );
       setTweets(tweets.filter((tweet) => tweet.id !== tweetId));
     } catch (error) {
       console.error("Tweet silinirken bir hata oluştu", error);
@@ -71,9 +60,8 @@ const Home = () => {
   // Çıkış işlemi
   const handleLogout = () => {
     logout();
-    localStorage.removeItem("access_token"); // Token'ı sil
     setIsLoggedIn(false); // Yönlendirme için isLoggedIn state'ini sıfırla
-    history.push("/login"); // Login sayfasına yönlendir
+    navigate("/login"); // Login sayfasına yönlendir
   };
 
   return (
@@ -95,7 +83,7 @@ const Home = () => {
             </>
           ) : (
             <button
-              onClick={() => history.push("/login")}
+              onClick={() => navigate("/login")}
               className="bg-green-500 text-white px-4 py-2 rounded"
             >
               Giriş Yap
@@ -130,8 +118,11 @@ const Home = () => {
               className="border p-4 mb-4 rounded-md shadow-md flex justify-between items-center"
             >
               <div>
-                <p className="font-bold">{tweet.user.username}</p>
-                <p>{tweet.text}</p>
+                <p className="font-bold">
+                  {tweet.user ? tweet.user.username : "Bilinmeyen Kullanıcı"}{" "}
+                  {/* user objesinin varlığını kontrol et */}
+                </p>
+                <p>{tweet.content}</p>
               </div>
               <button
                 onClick={() => handleDeleteTweet(tweet.id)}

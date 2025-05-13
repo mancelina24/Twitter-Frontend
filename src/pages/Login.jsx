@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"; // AuthContext'ten useAuth hook'unu alıyoruz
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuth(); // login fonksiyonunu kullanıyoruz
-  const history = useHistory();
+  const navigate = useNavigate();
+  const { login, user } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await login(email, password); // Sadece context'teki login fonksiyonunu çağırıyoruz
-      history.push("/"); // Başarılıysa yönlendir
+      navigate("/"); // Giriş başarılıysa yönlendir
     } catch (error) {
       console.error("Giriş yapılırken bir hata oluştu:", error);
     }
