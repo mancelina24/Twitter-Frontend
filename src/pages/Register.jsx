@@ -1,100 +1,109 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-
 import { useHistory } from "react-router-dom";
-import { register } from "../store/actions/userActions";
+import axios from "axios";
 
 const Register = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const dispatch = useDispatch();
-  const { loading, error, isAuthenticated } = useSelector(
-    (state) => state.user
-  );
+  const [error, setError] = useState("");
   const history = useHistory();
 
-  const handleRegister = async (e) => {
+  // Form submit işlemi
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(register(username, email, password));
+
+    if (!username || !email || !password) {
+      setError("Tüm alanlar zorunludur!");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/workintech/twitter/auth/register",
+        {
+          email,
+          password,
+          username,
+        }
+      );
+
+      if (response.status === 200) {
+        // Kayıt başarılı olduktan sonra login sayfasına yönlendir
+        history.push("/login");
+      }
+    } catch (err) {
+      setError("Bir hata oluştu! Lütfen tekrar deneyin.");
+      console.error("Register error", err);
+    }
   };
-  if (isAuthenticated) {
-    history.push("/"); // Giriş başarılıysa anasayfaya yönlendir
-  }
+
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <h2 className="block text-gray-700 text-2xl font-bold mb-6 text-center">
+    <div className="max-w-md mx-auto p-4">
+      <h2 className="text-2xl font-semibold mb-6">Kayıt Ol</h2>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <div className="mb-4">
+          <label
+            htmlFor="username"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Kullanıcı Adı
+          </label>
+          <input
+            type="text"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-md"
+            placeholder="Kullanıcı adınızı girin"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700"
+          >
+            E-posta
+          </label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-md"
+            placeholder="E-posta adresinizi girin"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Şifre
+          </label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-md"
+            placeholder="Şifrenizi girin"
+            required
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white px-4 py-2 rounded-md"
+        >
           Kayıt Ol
-        </h2>
-        <form onSubmit={handleRegister}>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="username"
-            >
-              Kullanıcı Adı
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="username"
-              type="text"
-              placeholder="Kullanıcı Adı"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="email"
-            >
-              E-posta
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="email"
-              type="email"
-              placeholder="E-posta"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="mb-6">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="password"
-            >
-              Şifre
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-              id="password"
-              type="password"
-              placeholder="Şifre"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-            />
-            {error && <p className="text-red-500 text-xs italic">{error}</p>}
-          </div>
-          <div className="flex items-center justify-between">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? "Kaydolunuyor..." : "Kaydol"}
-            </button>
-            <a
-              className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-              href="/login"
-            >
-              Zaten hesabınız var mı?
-            </a>
-          </div>
-        </form>
-      </div>
+        </button>
+      </form>
     </div>
   );
 };
